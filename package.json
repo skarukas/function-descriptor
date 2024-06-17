@@ -19,6 +19,7 @@
     "license": "GNU",
     "dependencies": {},
     "scripts": {
-        "test": "node test.js"
+        "test": "node test.js",
+        "lint": "eslint --fix --ext .js,.jsx ."
     }
 }
