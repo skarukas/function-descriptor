@@ -1,7 +1,7 @@
 /*eslint no-console: "off"*/
 /*eslint-disable max-len */
 
-const describeFunction = require('./main.js');
+const describeFunction = require('./dist/main.cjs');
 
 function assertHasSubset(obj, subset) {
 	let violations = [];

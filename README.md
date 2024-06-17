@@ -1,10 +1,12 @@
-# Javascript FunctionDescriptors
+# Javascript `FunctionDescriptor`s
 
 The *even better* (subjectively) library to describe a Javascript function, including its parameter names and traits.
 
 This is essentially a wrapper around the parsing logic from [`get-param-names`](https://github.com/theLAZYmd/get-param-names), refactored and slightly modified to fix some bugs.
 
 ```js
+const describeFunction = require('function-descriptor')
+
 const fn = (a, b=1) => a + b
 const descriptor = describeFunction(fn)
 
@@ -15,6 +17,18 @@ console.log(descriptor.parameters[1].name)  // "b"
 console.log(descriptor.parameters[1].hasDefault)  // true
 ```
 
+## Installation
+Within a Node.js project, install through [npm](https://www.npmjs.com/package/function-descriptor).
+```bash
+npm install function-descriptor
+```
+Or, to use on the web, add:
+```html
+<script type="application/javascript" src="https://unpkg.com/function-descriptor/dist/main.umd.js"></script>
+```
+Or poke around the `dist` folder.
+
+## Features
 Information you can glean from a function using this library:
 - Minimum number of arguments (`minArgs`)
 - Maximum number of arguments (`maxArgs`)

@@ -206,6 +206,9 @@ class FunctionDescriptor {
 
 }
 
-module.exports = function describeFunction(f) {
+export default function describeFunction(f) {
 	return new FunctionDescriptor(f);
-};
+}
+
+describeFunction.FunctionDescriptor = FunctionDescriptor;
+describeFunction.ParamDescriptor = ParamDescriptor;
