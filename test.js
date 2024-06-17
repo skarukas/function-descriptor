@@ -43,8 +43,9 @@ assertHasSubset(
 	}
 );
 
-function f1(str = 'hello', arr = ['what\'s up']) {
-	return [str, arr];
+const myVar = [0, 1, {value: 2}];
+function f1(str = 'hello', arr = ['what\'s up'], reference=myVar[2].value) {
+	return [str, arr, reference];
 }
 assertHasSubset(
 	describeFunction(f1),
@@ -56,6 +57,7 @@ assertHasSubset(
 		parameters: [
 			{ name: 'str', hasDefault: true, destructureType: null },
 			{ name: 'arr', hasDefault: true, destructureType: null },
+			{ name: 'reference', hasDefault: true, destructureType: null },
 		]
 	}
 );
