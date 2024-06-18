@@ -303,3 +303,15 @@ assertHasSubset(
 		isAsync: false,
 	}
 );
+
+assertHasSubset(
+	describeFunction(function() {}),
+	{
+		minArgs: 0,
+		maxArgs: 0,
+		isArrowFunction: false,
+		isAsync: false,
+		isClass: false,
+		parameters: []
+	}
+);
