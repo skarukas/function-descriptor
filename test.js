@@ -133,10 +133,16 @@ class f5 {
 		item2 = {
 			prop1: true,
 			prop2: false,
-			prop3: ['array', 'of', 'strings']
+			prop3: ['array', `of${null}...[]{'"'''"}`, 'strings, []...arg{( a, b )function static async => [native code]}']
 		}
-	} = {}, [item3, item4, [item5, item6]]) {
-		return [item1, item2, item3, item4, item5, item6];
+	} = {}, [item3, item4, [item5, item6]] = [1, 2, [3, 4]]) {
+		this.propFn = nothing => [item1, item2, item3, item4, item5, item6, nothing];
+	}
+	instanceFn(a, b) {
+		return a + b;
+	}
+	static staticFn(a, b) {
+		return a + b;
 	}
 }
 assertHasSubset(
@@ -147,9 +153,10 @@ assertHasSubset(
 		name: 'f5',
 		isArrowFunction: false,
 		isAsync: false,
+		isClass: true,
 		parameters: [
 			{ hasDefault: true, destructureType: 'object' },
-			{ hasDefault: false, destructureType: 'array' },
+			{ hasDefault: true, destructureType: 'array' },
 		]
 	}
 );
@@ -179,6 +186,7 @@ assertHasSubset(
 		maxArgs: 2,
 		isArrowFunction: false,
 		isAsync: false,
+		isClass: false,
 		parameters: [
 			{ hasDefault: true, destructureType: 'object' },
 			{ hasDefault: false, destructureType: 'array' },
@@ -218,5 +226,80 @@ assertHasSubset(
 		isArrowFunction: true,
 		isAsync: false,
 		parameters: []
+	}
+);
+
+assertHasSubset(
+	describeFunction(new f5().propFn),
+	{
+		minArgs: 1,
+		maxArgs: 1,
+		isArrowFunction: true,
+		isAsync: false,
+		parameters: [
+			{ name: 'nothing', hasDefault: false, destructureType: null },
+		]
+	}
+);
+
+assertHasSubset(
+	describeFunction(new f5().instanceFn),
+	{
+		minArgs: 2,
+		maxArgs: 2,
+		name: 'instanceFn',
+		isArrowFunction: false,
+		isAsync: false,
+		parameters: [
+			{ name: 'a', hasDefault: false, destructureType: null },
+			{ name: 'b', hasDefault: false, destructureType: null },
+		]
+	}
+);
+
+assertHasSubset(
+	describeFunction(f5.staticFn),
+	{
+		minArgs: 2,
+		maxArgs: 2,
+		name: 'staticFn',
+		isArrowFunction: false,
+		isAsync: false,
+		parameters: [
+			{ name: 'a', hasDefault: false, destructureType: null },
+			{ name: 'b', hasDefault: false, destructureType: null },
+		]
+	}
+);
+
+// No own constructor.
+class f9 extends f5 { }
+assertHasSubset(
+	describeFunction(f9),
+	{
+		minArgs: 0,
+		maxArgs: 2,
+		name: 'f9',
+		isArrowFunction: false,
+		isAsync: false,
+		isClass: true,
+		parameters: [
+			{ hasDefault: true, destructureType: 'object' },
+			{ hasDefault: true, destructureType: 'array' },
+		]
+	}
+);
+
+class superClassNoConstructor {}
+class f10 extends superClassNoConstructor {}
+assertHasSubset(
+	describeFunction(f10),
+	{
+		minArgs: 0,
+		maxArgs: 0,
+		name: 'f10',
+		isClass: true,
+		isArrowFunction: false,
+		isAsync: false,
 	}
 );

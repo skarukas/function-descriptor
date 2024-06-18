@@ -1,14 +1,15 @@
 {
     "name": "function-descriptor",
     "description": "A Javascript library for inspecting a function's signature, including parameter names.",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "main": "dist/main.js",
     "module": "dist/main.es.js",
     "keywords": [
         "functions",
         "parameters",
         "arguments",
-        "parser"
+        "parser",
+        "signature"
     ],
     "homepage": "https://github.com/skarukas/function-descriptor/blob/master/README.md",
     "releases": "https://github.com/skarukas/function-descriptor/releases",
@@ -19,16 +20,19 @@
     "author": "skarukas",
     "license": "GNU",
     "scripts": {
-        "test": "node test.js",
+        "test": "npm run build && node test.js",
         "lint": "eslint --fix --ext .js,.jsx .",
-        "build:es": "rollup src/main.js -o dist/main.es.js -f es",
-        "build:umd": "rollup src/main.js -o dist/main.umd.js -f umd -n describeFunction",
-        "build:cjs": "rollup src/main.js -o dist/main.cjs -f cjs",
-        "build": "npm run lint && npm run build:cjs && npm run build:es && npm run build:umd"
+        "build:es": "rollup src/main.js -o dist/main.es.js -f es  -e \"acorn-loose\"",
+        "build:umd": "rollup src/main.js -o dist/main.umd.js -f umd -n describeFunction -e \"acorn-loose\" -g \"acorn-loose\":Global",
+        "build:cjs": "rollup src/main.js -o dist/main.cjs -f cjs  -e \"acorn-loose\"",
+        "build": "npm run lint; npm run build:cjs && npm run build:es && npm run build:umd"
     },
     "devDependencies": {
         "@babel/cli": "^7.24.7",
         "@babel/core": "^7.24.7",
         "@babel/preset-env": "^7.24.7"
+    },
+    "dependencies": {
+        "acorn-loose": "^8.4.0"
     }
 }

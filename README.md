@@ -1,8 +1,8 @@
 # Javascript `FunctionDescriptor`s
 
-The *even better* (subjectively) library to describe a Javascript function, including its parameter names and traits.
+Fast, foolproof library to describe a Javascript function, including its parameter names and traits.
 
-This is essentially a wrapper around the parsing logic from [`get-param-names`](https://github.com/theLAZYmd/get-param-names), refactored and slightly modified to fix some bugs.
+This library uses [`acorn`](https://github.com/acornjs/acorn/tree/master) to parse the stringified function, then traverses the syntax tree. Because it doesn't rely on Regex, it is much less brittle than other libraries.
 
 ```js
 const describeFunction = require('function-descriptor')
@@ -24,16 +24,23 @@ npm install function-descriptor
 ```
 Or, to use on the web, add:
 ```html
+<!-- Dependency: 'acorn-loose' library. --> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/acorn-loose/8.4.0/acorn-loose.min.js" integrity="sha512-Ffb86Jr5RrEScAcI3I/LQ8Tr/VM6C/I79Icryx8X4cpiBIvdPNKqf2MbXdlpFj61+gCPTWWQkwOw9m/7CHed3A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- This library. -->
 <script type="application/javascript" src="https://unpkg.com/function-descriptor/dist/main.umd.js"></script>
 ```
-Or poke around the `dist` folder.
+Or, poke around the `dist` folder.
 
 ## Features
 Information you can glean from a function using this library:
 - Minimum number of arguments (`minArgs`)
 - Maximum number of arguments (`maxArgs`)
-- Whether it is an arrow function (`isArrowFunction`)
-- Whether it is async (`isAsync`)
+- Whether it is:
+  - An arrow function (`isArrowFunction`)
+  - An async function (`isAsyncFunction`)
+  - A generator function (`isGenerator`)
+  - A class (`isClass`). In this case, the returned `FunctionDescriptor` will describe the constructor.
 - Parameter traits (`parameters`)
   - Parameter name (`name`)
   - Whether there is a default value (`hasDefault`)
@@ -47,10 +54,13 @@ This library supports a number of features including:
 - Spread syntax
 - Object and array destructuring
 - Detecting if a parameter has a default value set
-- Comment within the signature
-
-> [!CAUTION]
-> There are a number of tests verifying these extended features. However, the library is based on RegEx parsing and may therefore still be brittle.
+- Class / instance methods
+- Arbitrary strings and comments within the signature, such as the following:
+```js
+function(myarg="Let's try to break the parser: , myotherarg,\",)\n\n[...args]function(){}{") {
+  // Definition
+}
+```
 
 ## Complex Example
 
@@ -74,6 +84,8 @@ FunctionDescriptor {
   f: [Function: f],
   name: 'f',
   isAsync: false,
+  isClass: false,
+  isGenerator: false,
   parameters: [
     ParamDescriptor {
       name: 'x',
@@ -83,19 +95,19 @@ FunctionDescriptor {
     },
     ParamDescriptor {
       name: 'y',
-      rawName: 'y',
+      rawName: ...,
       destructureType: null,
       hasDefault: true
     },
     ParamDescriptor {
       name: undefined,
-      rawName: { operation: undefined, printArgs: undefined },
+      rawName: ...,
       destructureType: 'object',
       hasDefault: false
     },
     ParamDescriptor {
       name: 'args',
-      rawName: '...args',
+      rawName: ...,
       destructureType: 'spread',
       hasDefault: false
     }
@@ -108,6 +120,6 @@ FunctionDescriptor {
 ```
 
 Some things to note:
-- Arguments formed by object or array destructuring do not have names, but their original value can be accessed through the `rawName` parameter.
+- Arguments formed by object or array destructuring do not have names.
 - When a parameter uses spread syntax, the maximum number of arguments becomes `Infinity`.
 - When there are defaults, the actual values are **not** detected (it would be possible to parse these values if they were literals, but that's not implemented).
